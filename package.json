@@ -1,0 +1,59 @@
+{
+  "name": "renewcanvas-africa",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
+    "start": "next start",
+    "lint": "eslint src/lib/foundation src/lib/backend src/lib/ml tests --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --import tsx tests/**/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:coverage": "c8 --reporter=json-summary --reporter=text --check-coverage --lines 80 node --test --import tsx tests/**/*.test.ts",
+    "security:audit": "npm audit --audit-level=high",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "deploy:verify": "npm run typecheck && npm run lint && npm test && npm run build",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/three": "^0.184.0",
+    "@vercel/blob": "^2.3.3",
+    "autoprefixer": "^10.5.0",
+    "dotenv": "^17.4.2",
+    "lucide-react": "^1.14.0",
+    "next": "^16.2.4",
+    "pg": "^8.20.0",
+    "postcss": "^8.5.12",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "tailwindcss": "^4.2.4",
+    "three": "^0.179.1",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
+    "axe-core": "^4.11.4",
+    "c8": "^11.0.0",
+    "eslint": "^10.3.0",
+    "prisma": "^7.8.0",
+    "tsx": "^4.20.6",
+    "typescript-eslint": "^8.59.1"
+  }
+}
