@@ -26,6 +26,17 @@ const ALLOWED_CONTENT_TYPES = [
   "image/gif",
 ];
 
+const BLOB_STORAGE_MISSING_MESSAGE =
+  "Image storage is not configured. Missing BLOB_READ_WRITE_TOKEN.";
+
+if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  console.warn(BLOB_STORAGE_MISSING_MESSAGE);
+}
+
+export function isStorageConfigured(): boolean {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
 /**
  * Infer MIME type from filename extension as a fallback
  * when the browser does not send a content type.
@@ -53,9 +64,10 @@ export async function uploadFile(
   const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
   if (!blobToken) {
+    console.error(BLOB_STORAGE_MISSING_MESSAGE);
     throw new AuthError(
       "storage_not_configured",
-      "Image storage is not configured. Contact support.",
+      BLOB_STORAGE_MISSING_MESSAGE,
       503
     );
   }
@@ -91,11 +103,21 @@ export async function uploadFile(
   const timestamp = Date.now();
   const pathname = `${folder}/${timestamp}-${safeFilename}`;
 
-  const blob = await put(pathname, fileData, {
-    access: "public",
-    contentType: resolvedType,
-    token: blobToken,
-  });
+  let blob;
+  try {
+    blob = await put(pathname, fileData, {
+      access: "public",
+      contentType: resolvedType,
+      token: blobToken,
+    });
+  } catch (error) {
+    console.error("Blob storage upload failed:", error);
+    throw new AuthError(
+      "storage_upload_failed",
+      "Image storage could not save this file. Check BLOB_READ_WRITE_TOKEN and storage provider configuration.",
+      502
+    );
+  }
 
   return {
     provider: "vercel_blob",
